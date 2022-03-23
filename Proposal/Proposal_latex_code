@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+\usepackage{graphicx}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage[T1]{fontenc}
+
+\author{Sruthy Annie Santhosh}
+\author{Diego Coello de Portugal}
+\author{Heliya Hasani}
+\author{Aditya Nair}
+\affil{Supervised by: Mofassir ul Islam Arif}
+\title{\textbf{Project Proposal : 
+Adversarial Robustness Across Representation Spaces}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem Setting}
+
+When training a deep neural network model to understand an image datasets, a common occurence is that the trained model output changes significantly between an original image and that same image with imperceptible perturbations. This perturbations in the original image to interfere with the model performance are called \textit{Adversarial Attacks}.
+
+One of the fundamental implications of the adversarial attacks is that in some instances where the task corresponds to classification, the model evaluates the image from the adversarial attack as belonging to a class completely different from the correct one, even though the original image is classified correctly. However, the changes done to the original image are so small that the perturbed image also belongs to the same class. This adversarial attacks methods proved that this type of models can be fooled and are somehow inconsistent.
+\\
+
+Adversarial learning has become popular due to vulnerability of systems because of not previously pre - defined data into the machine learning algorithm. For instance, self driving car algorithm should not only detect pavements, humans or traffic signs. It should also detect animals or weather for driving security hence, our aim is to create robust environment for these type of datasets which might cause detrimental problems in real life. Adversarial robustness is …. In our project our aim is to create robust environments for different datasets…
+\\
+
+Aim of this project is improve adversarial robustness in various datasets using denoising in neural networks . Adversarial robustness is crucial because in real life scenarios there are different type of parameters which are not trained before in current dataset which machine learning algorithm should detect. 
+
+\section{State-of-the-art}
+
+State-of-the-Art existing work (to solve the same problem). The existing methods/solutions should be classified and compared with current work (how current work distinguishes from previously existing methods/solutions).
+\\
+
+Do not forget to mention the base line research paper which the current paper tries to improve. Also provide references to all the research papers mentioned in this section. For example, “In [2], authors proposed an algorithm ……”. In references section, add reference of [2].
+\\
+
+WHAT -\>
+
+WHY-\>
+
+WHEN -\>
+\\
+
+Compare current and base paper 
+HOW -> In 2014, Good fellow introduced a strategy to improve the robustness of a neural network is by adding adversarial examples to the training dataset. He named the strategy as Adversarial Training. Adversarial Training is a standard brute force approach where the defender simply generates a lot of adversarial examples and augments these perturbed data while training the targeted model.
+
+\section{Data Foundation}
+
+The datasets that are going to be used in this project can be divided in 2 groups:
+
+\begin{enumerate}
+    \item MNIST/FashionMNIST:
+    
+    These datasets are relatively simple and can be used as a stepping stone in order to test different hipothesis without the added complexity that bigger datasets have.
+    
+    \item CIFAR-10/ImageNet:
+    
+    These datasets would be used after an idea has been previously tested with simpler datasets. CIFAR-10 and ImageNet will provide examples closer to real life situations, where there is a high complexity in the datasets that can interfere with the model performance.
+    
+\end{enumerate}
+
+
+\section{Research Idea}
+
+We can paraphrase and change the problem setting a little bit and briefly introduce what is adversarial learning ?? Why need attacks and defenses ??
+\\
+
+Check related work from baseline
+
+
+\section{Tangible Outcomes}
+
+Research paper publication.
+
+
+\section{Work Plan}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Assigment & Timelapse\\
+        \hline
+        \hline
+        Research literature & 01/04 - 30/04\\
+        \hline
+        Decide solution approaches & 01/05 - 07/05\\
+        \hline
+        First Implementations & 07/05 - 31/05\\
+        \hline
+        Prepare first presentation & 01/06 - 07/06\\
+        \hline
+        \textbf{First presentation} & \textbf{08/06}\\
+        \hline
+        Implement and test different hipothesis & 09/06 - 28/09\\
+        \hline
+        Prepare second presentation & 29/09 - 05/10\\
+        \hline
+        \textbf{Second presentation} & \textbf{06/10}\\
+        \hline
+        Final touches and drawing conclusions & 07/10 - 24/11\\
+        \hline
+        Prepare final presentation & 25/11 - 01/12\\
+        \hline
+        \textbf{Final presentation} & \textbf{02/12}\\
+        \hline
+        Elaborate final report & 03/12 - 30/03\\
+        \hline
+        \textbf{Final report} & \textbf{31/03}\\
+        \hline
+    \end{tabular}
+    \caption{Timeplan structure}
+    \label{tab:my_label}
+\end{table}
+
+
+
+\section{Team}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Student Name & Student ID & Study course & Semestre\\
+        \hline
+        \hline
+        Annie Santhosh, Sruthy & ... & Data Analytics & 2\\
+        \hline
+        Coello de Portugal, Diego & 312838 & Data Analytics & 2\\
+        \hline
+        Hasani, Heliya & ... & Data Analytics & 3\\
+        \hline
+        Nair, Aditya & ... & Data Analytics & 3\\
+        \hline
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
+
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{ARARP}
+Awasthi, Pranjal, et al.
+\textit{"Adversarial Robustness Across Representation Spaces."}
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
+
+\bibitem{Denoise}
+Xie, Cihang, et al.
+\textit{"Feature denoising for improving adversarial robustness."}
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019.
+
+\bibitem{Disentangling}
+Stutz, David, Matthias Hein, and Bernt Schiele.
+\textit{"Disentangling adversarial robustness and generalization."}
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019.
+
+\bibitem{Local linear}
+Qin, Chongli, et al.
+\textit{"Adversarial robustness through local linearization."}
+arXiv preprint arXiv:1907.02610 (2019).
+
+
+\end{thebibliography}
+
+
+
+
+\end{document}
