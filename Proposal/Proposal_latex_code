@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[T1]{fontenc}
+\usepackage{multirow}
 
 \author{Sruthy Annie Santhosh}
 \author{Diego Coello de Portugal}
@@ -33,21 +34,41 @@ Aim of this project is improve adversarial robustness in various datasets using 
 
 \section{State-of-the-art}
 
-State-of-the-Art existing work (to solve the same problem). The existing methods/solutions should be classified and compared with current work (how current work distinguishes from previously existing methods/solutions).
+The baseline paper for this project is \textit{Adversarial Robustness across representation spaces} \cite{ARARP}. In this paper the authors mention the importance of training against different attacks methods, since training against specific attacks only improves the robustness against the same type of attacks.
 \\
 
-Do not forget to mention the base line research paper which the current paper tries to improve. Also provide references to all the research papers mentioned in this section. For example, “In [2], authors proposed an algorithm ……”. In references section, add reference of [2].
+In regards of the main attacks methods used, Fast Gradient Sign Method or FGSM and Project Gradient Method are the most used methods, specially the second one in the most recent papers. Both of them aim to do small pertubations on the image to get an adversarial attack. This perturbations are bounded depending on the representation chosen: pixel based, $L_{p}$ norm and Discrete Cosine Transformed or DCT among others.
+
+As mention previously, to defend against different representation spaces the model also needs to be trained on all of those.
 \\
 
-WHAT -\>
-
-WHY-\>
-
-WHEN -\>
+The most frequent way to increase robustness is to train the model with adversarial attacks, where the perturbed images have the same label as the original images since the perturbation is bounded to be small enough to not interfere with the results \cite{EHAE}.
 \\
 
-Compare current and base paper 
-HOW -> In 2014, Good fellow introduced a strategy to improve the robustness of a neural network is by adding adversarial examples to the training dataset. He named the strategy as Adversarial Training. Adversarial Training is a standard brute force approach where the defender simply generates a lot of adversarial examples and augments these perturbed data while training the targeted model.
+The last attack distinction that exist is whether it knows the model structure and values (\textit{white-box}) or it doesn't (\textit{black-box}). With all this information we can make a small table classifying different attacks, as shown in figure \ref{tab:attacks}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|p{1.6cm}||p{2.3cm}|p{1.75cm}|p{1.75cm}|p{2.5cm}|}
+        \hline
+        Norm & $L_0$ & $L_1$ & $L_2$ & $L_{\infty}$\\
+        \hline
+        \hline
+        White box & SparseFool \cite{Sparsefool}, JSMA \cite{JSMA} & Elastic-net attacks \cite{EAD} & Carlini-Wagner \cite{carlini} & PGD \cite{pgd}, i\_FGSM \cite{ifgsm}, Carlini-Wagner \cite{carlini}\\
+        \hline
+        Black-box & Adversarial Scratches \cite{scratch}, Sparse-RS \cite{sparse} & - & GenAttack \cite{genattack}, sim \cite{simba} & GenAttack \cite{genattack}, SIMBA \cite{simba}\\
+        \hline
+    \end{tabular}
+    \caption{Attacks classification table}
+    \label{tab:attacks}
+\end{table}
+
+Even though training against this different attacks increases the robustness against them, it also has been shown that it can affect the performance against the clean dataset, getting a trade off between accuracy and robustness \cite{trade-off}.
+\\
+
+Lastly, it is important to mention that this field is a relatively new area of research and there are still some gaps of knowledge in it. For instance, the way of training a model to achieve robustness with the current literature, is closer to a brute force idea rather than designing an intrinsically robust model.
+
+\newpage
 
 \section{Data Foundation}
 
@@ -67,51 +88,57 @@ The datasets that are going to be used in this project can be divided in 2 group
 
 \section{Research Idea}
 
-We can paraphrase and change the problem setting a little bit and briefly introduce what is adversarial learning ?? Why need attacks and defenses ??
+We will start by doing an implementation of the attack methods: Fast Gradient Sign Method or FGSM and Project Gradient Method or PGD. In the present, PGD is the main method used for training adversarial robustness models. Nevertheless, FGSM has been shown to have lower computational requirements while holding the same performance.
+
+Both methods will be compared to check their performance against adversarial attacks, but also the trade off in accuracy for the clean dataset.
 \\
 
-Check related work from baseline
+Once the methods are understood, the project will continue using packages as Adversarial Robustness Toolbox or ART. This package has already the previous attacks implemented and it expands by adding additional features to help training adversarial learning models.
+\\
 
+The main results will be tested across different representation spaces, manely on a pixel based, $L_{p}$ norm and DCT. However, this is not enough to prove the robustness and therefore the results will be tested in different datasets to prove its consistency (MNIST, CIFAR-10, ImageNet, etc.).
+
+\newpage
 
 \section{Tangible Outcomes}
 
-Research paper publication.
+We are aiming to publish the work as a research paper.
 
 
 \section{Work Plan}
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|c|c|}
+    \begin{tabular}{|c|c|c|}
         \hline
-        Assigment & Timelapse\\
+        Assigment & Timelapse & People Assigned\\
         \hline
         \hline
-        Research literature & 01/04 - 30/04\\
+        Research literature & 01/04 - 30/04 & Whole team\\
         \hline
-        Decide solution approaches & 01/05 - 07/05\\
+        Decide solution approaches & 01/05 - 07/05 & Whole team\\
         \hline
-        First Implementations & 07/05 - 31/05\\
+        First Implementations & 07/05 - 31/05 & Whole team\\
         \hline
-        Prepare first presentation & 01/06 - 07/06\\
+        Prepare first presentation & 01/06 - 07/06 & Whole team\\
         \hline
-        \textbf{First presentation} & \textbf{08/06}\\
+        \textbf{First presentation} & \textbf{08/06} & \textbf{Whole team}\\
         \hline
-        Implement and test different hipothesis & 09/06 - 28/09\\
+        Implement and test different hipothesis & 09/06 - 28/09 & Whole team\\
         \hline
-        Prepare second presentation & 29/09 - 05/10\\
+        Prepare second presentation & 29/09 - 05/10 & Whole team\\
         \hline
-        \textbf{Second presentation} & \textbf{06/10}\\
+        \textbf{Second presentation} & \textbf{06/10} & \textbf{Whole team}\\
         \hline
-        Final touches and drawing conclusions & 07/10 - 24/11\\
+        Final touches and drawing conclusions & 07/10 - 24/11 & Whole team\\
         \hline
-        Prepare final presentation & 25/11 - 01/12\\
+        Prepare final presentation & 25/11 - 01/12 & Whole team\\
         \hline
-        \textbf{Final presentation} & \textbf{02/12}\\
+        \textbf{Final presentation} & \textbf{02/12} & \textbf{Whole team}\\
         \hline
-        Elaborate final report & 03/12 - 30/03\\
+        Elaborate final report & 03/12 - 30/03 & Whole team\\
         \hline
-        \textbf{Final report} & \textbf{31/03}\\
+        \textbf{Final report} & \textbf{31/03} & \textbf{Whole team}\\
         \hline
     \end{tabular}
     \caption{Timeplan structure}
@@ -129,13 +156,13 @@ Research paper publication.
         Student Name & Student ID & Study course & Semestre\\
         \hline
         \hline
-        Annie Santhosh, Sruthy & ... & Data Analytics & 2\\
+        Santhosh, Sruthy Annie & 312213 & Data Analytics & 2\\
         \hline
         Coello de Portugal, Diego & 312838 & Data Analytics & 2\\
         \hline
-        Hasani, Heliya & ... & Data Analytics & 3\\
+        Hasani, Heliya & 311613 & Data Analytics & 3\\
         \hline
-        Nair, Aditya & ... & Data Analytics & 3\\
+        Nair, Aditya & 311014 & Data Analytics & 3\\
         \hline
     \end{tabular}
     \caption{Caption}
@@ -165,6 +192,77 @@ Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognitio
 Qin, Chongli, et al.
 \textit{"Adversarial robustness through local linearization."}
 arXiv preprint arXiv:1907.02610 (2019).
+
+\bibitem{FGSM}
+Ali Shafahi, Mahyar Najibi, Mohammad Amin Ghiasi,
+Zheng Xu, John Dickerson, Christoph Studer, Larry S Davis,
+Gavin Taylor, and Tom Goldstein.
+\textit{Adversarial training for
+free! In Advances in Neural Information Processing Systems},
+pages 3353–3364, 2019.
+
+\bibitem{trade-off}
+Hongyang Zhang, Yaodong Yu, Jiantao Jiao, Eric P Xing,
+Laurent El Ghaoui, and Michael I Jordan.
+\textit{Theoretically
+principled trade-off between robustness and accuracy.}
+arXiv preprint arXiv:1901.08573, 2019.
+
+\bibitem{EHAE}
+Ian J. Goodfellow, Jonathon Shlens \& Christian Szegedy.
+{Explaining and Harnessing Adversarial Examples.}
+arXiv:1412.6572v3 [stat.ML] 20 Mar 2015
+
+\bibitem{Sparsefool}
+Modas, Apostolos and Moosavi-Dezfooli, Seyed-Mohsen and Frossard, Pascal.
+\textit{SparseFool: a few pixels make a big difference}.
+2018, arXiv:1811.02248 [cs.CV]
+
+\bibitem{JSMA}
+Nicolas Papernot, Patrick McDaniel, Ian Goodfellow, Somesh Jha, Z. Berkay Celik, Ananthram Swami.
+\textit{Practical Black-Box Attacks against Machine Learning.}
+2016. arXiv:1602.02697 [cs.CR]
+
+\bibitem{EAD}
+Pin-Yu Chen, Yash Sharma, Huan Zhang, Jinfeng Yi, Cho-Jui Hsieh.
+\textit{EAD: Elastic-Net Attacks to Deep Neural Networks via Adversarial Examples}
+2017, arXiv:1709.04114v3 [stat.ML].
+
+\bibitem{scratch}
+Malhar Jere, Briland Hitaj, Gabriela Ciocarlie, Farinaz Koushanfar.
+\textit{Scratch that! An Evolution-based Adversarial Attack against Neural Networks.}
+2019,  arXiv:1912.02316v1 [cs.NE].
+
+\bibitem{sparse}
+Francesco Croce, Maksym Andriushchenko, Naman D. Singh, Nicolas Flammarion, Matthias Hein
+\textit{Sparse-RS: a versatile framework for query-efficient sparse black-box adversarial attacks}.
+2020,  arXiv:2006.12834v3 [cs.LG].
+
+\bibitem{carlini}
+N. Carlini and D. Wagner.
+\textit{Towards Evaluating the Robustness of Neural Networks}.
+2017 IEEE Symposium on Security and Privacy (SP), 2017, pp. 39-57, doi: 10.1109/SP.2017.49.
+
+\bibitem{genattack}
+Moustafa Alzantot, Yash Sharma, Supriyo Chakraborty, Mani Srivastava
+\textit{GenAttack: Practical Black-box Attacks with Gradient-Free Optimization}.
+2018, arXiv:1805.11090v1 [cs.LG].
+
+\bibitem{simba}
+Chuan Guo, Jacob R. Gardner, Yurong You, Andrew Gordon Wilson, Kilian Q. Weinberger.
+\textit{Simple Black-box Adversarial Attacks}.
+2019, arXiv:1905.07121v2 [cs.LG].
+
+\bibitem{pgd}
+Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, Adrian Vladu
+\textit{Towards Deep Learning Models Resistant to Adversarial Attacks}.
+2017, arXiv:1706.06083v4 [stat.ML].
+
+\bibitem{ifgsm}
+Ian J. Goodfellow, Jonathon Shlens, Christian Szegedy
+\textit{Explaining and Harnessing Adversarial Examples}.
+2014, arXiv:1412.6572v3 [stat.ML].
+
 
 
 \end{thebibliography}
