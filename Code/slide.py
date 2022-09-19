@@ -2,10 +2,9 @@ import torch
 import torch.nn as nn
 
 from torchattacks.attack import Attack
-import torch_dct as dct
 
 
-class PGD_DCT(Attack):
+class SLIDE(Attack):
     r"""
     PGD in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
     [https://arxiv.org/abs/1706.06083]
@@ -26,35 +25,41 @@ class PGD_DCT(Attack):
     """
     def __init__(self, model, eps=0.3,
                  alpha=2/255, steps=40, random_start=True):
-        super().__init__("PGD_DCT", model)
+        super().__init__("SLIDE", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.random_start = random_start
         self._supported_mode = ['default', 'targeted']
+        self.percentile = 0.01
 
     def forward(self, images, labels):
         r"""
         Overridden.
         """
-        images_dct = dct.dct(images).clone().detach().to(self.device)
+        images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
         if self._targeted:
-            target_labels = self._get_target_label(images_dct, labels)
+            target_labels = self._get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images_dct = images_dct.clone().detach()
+        adv_images = images.clone().detach()
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images_dct = adv_images_dct + torch.empty_like(adv_images_dct).uniform_(-self.eps, self.eps).detach()
-            adv_images_dct = adv_images_dct.detach()
+            delta = torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
+            delta_shape = delta.shape
+            delta_flat = torch.reshape(delta, (delta_shape[0], delta_shape[1], -1))
+            delta_norm1 = torch.sum(delta_flat, dim=-1, keepdim=True)
+            delta_flat = delta_flat/delta_norm1
+            delta = torch.reshape(delta_flat, delta_shape)
+            adv_images = adv_images + delta
+            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for _ in range(self.steps):
-            adv_images_dct.requires_grad = True
-            adv_images = torch.clamp(dct.idct(adv_images_dct), min=0, max=1)
+            adv_images.requires_grad = True
             outputs = self.model(adv_images)
 
             # Calculate loss
@@ -64,11 +69,19 @@ class PGD_DCT(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, adv_images_dct,
+            grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
+            
+            #SLIDE algorithm
+            grad_shape = grad.shape
+            grad_flat = torch.reshape(grad, (grad_shape[0], grad_shape[1], -1))
+            grad_norm1 = torch.sum(grad_flat, dim=-1, keepdim=True)
+            grad_normalized = grad_flat/grad_norm1
+            grad_threshold_flat = grad_normalized.sign()*(torch.abs(grad_normalized)>self.percentile)
+            grad_threshold = torch.reshape(grad_threshold_flat, grad_shape)
 
-            adv_images_dct = adv_images_dct.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images_dct - images_dct, min=-self.eps, max=self.eps)
-            adv_images_dct = (images_dct + delta).detach()
+            adv_images = adv_images.detach() + self.alpha*grad_threshold
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return torch.clamp(dct.idct(adv_images), min=0, max=1).detach()
+        return adv_images.detach()

@@ -2,10 +2,8 @@ import torch
 import torch.nn as nn
 
 from torchattacks.attack import Attack
-import torch_dct as dct
 
-
-class PGD_DCT(Attack):
+class PGD_FFT(Attack):
     r"""
     PGD in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
     [https://arxiv.org/abs/1706.06083]
@@ -26,7 +24,7 @@ class PGD_DCT(Attack):
     """
     def __init__(self, model, eps=0.3,
                  alpha=2/255, steps=40, random_start=True):
-        super().__init__("PGD_DCT", model)
+        super().__init__("PGD_FFT", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
@@ -37,38 +35,49 @@ class PGD_DCT(Attack):
         r"""
         Overridden.
         """
-        images_dct = dct.dct(images).clone().detach().to(self.device)
+        images_fft = torch.fft.fft(images).clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
         if self._targeted:
-            target_labels = self._get_target_label(images_dct, labels)
+            target_labels = self._get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images_dct = images_dct.clone().detach()
+        adv_images_fft = images_fft.clone().detach()
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images_dct = adv_images_dct + torch.empty_like(adv_images_dct).uniform_(-self.eps, self.eps).detach()
-            adv_images_dct = adv_images_dct.detach()
+            delta = torch.empty_like(adv_images_fft).uniform_(-self.eps, self.eps)
+            adv_images_fft = (adv_images_fft + delta).detach()
 
         for _ in range(self.steps):
-            adv_images_dct.requires_grad = True
-            adv_images = torch.clamp(dct.idct(adv_images_dct), min=0, max=1)
+            adv_images_fft.requires_grad = True
+            adv_images = torch.clamp(torch.fft.ifft(adv_images_fft).real, min=0, max=1)
             outputs = self.model(adv_images)
-
+        
             # Calculate loss
             if self._targeted:
                 cost = -loss(outputs, target_labels)
             else:
                 cost = loss(outputs, labels)
+                
+
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, adv_images_dct,
+            grad = torch.autograd.grad(cost, adv_images_fft,
                                        retain_graph=False, create_graph=False)[0]
 
-            adv_images_dct = adv_images_dct.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images_dct - images_dct, min=-self.eps, max=self.eps)
-            adv_images_dct = (images_dct + delta).detach()
+            adv_images_fft = adv_images_fft.detach() + self.alpha*grad.sgn()
+            
+            #Clip epsilon away from original image
+            delta = adv_images_fft - images_fft
+            delta_real = torch.clamp(delta.real, min=-self.eps, max=self.eps)
+            delta_imag = torch.clamp(delta.imag, min=-self.eps, max=self.eps)
+            adv_images_fft = images_fft + torch.complex(delta_real, delta_imag)
+            
+        adv_images = torch.clamp(torch.fft.ifft(adv_images_fft).real, min=0, max=1).detach()
 
-        return torch.clamp(dct.idct(adv_images), min=0, max=1).detach()
+        return adv_images
+    
+    #####torch.cfloat
+    ####,dtype =torch.complex64

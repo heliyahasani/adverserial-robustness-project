@@ -32,19 +32,19 @@ class FFGSM_DCT(Attack):
         r"""
         Overridden.
         """
-        images = dct.dct(images).clone().detach().to(self.device)
+        images_dct = dct.dct(images).clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
         if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+            target_labels = self._get_target_label(images_dct, labels)
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images = images + torch.randn_like(images).uniform_(-self.eps, self.eps)
-        adv_images = torch.clamp(adv_images, min=0, max=None).detach()
-        adv_images.requires_grad = True
+        adv_images_dct = (images + torch.randn_like(images_dct).uniform_(-self.eps, self.eps)).detach()
+        adv_images_dct.requires_grad = True
+        adv_images = torch.clamp(dct.idct(adv_images_dct), min=0, max=1)
 
-        outputs = self.model(dct.idct(adv_images))
+        outputs = self.model(adv_images)
 
         # Calculate loss
         if self._targeted:
@@ -53,11 +53,11 @@ class FFGSM_DCT(Attack):
             cost = loss(outputs, labels)
 
         # Update adversarial images
-        grad = torch.autograd.grad(cost, adv_images,
+        grad = torch.autograd.grad(cost, adv_images_dct,
                                    retain_graph=False, create_graph=False)[0]
 
-        adv_images = adv_images + self.alpha*grad.sign()
-        delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
-        adv_images = dct.idct(torch.clamp(images + delta, min=0, max=None)).detach()
+        adv_images_dct = adv_images_dct + self.alpha*grad.sign()
+        delta = torch.clamp(adv_images_dct - images_dct, min=-self.eps, max=self.eps)
+        adv_images = torch.clamp(dct.idct(images_dct + delta), min=0, max=1).detach()
 
         return adv_images
